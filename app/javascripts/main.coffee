@@ -7,22 +7,54 @@ class Fetcher
 
   constructor: (arg) ->
     @parent = arg.parent
-    @platforms = ['soundcloud']
+    @platforms = ['soundcloud', 'youtube', 'spotify']
 
   fetch: (q) ->
     for platform in @platforms
       $.ajax
         url: "/platforms/#{platform}?q=#{q}"
         success: (r) =>     
-          console.log r 
-          #           obj = {
-          #   title: r.snippet.title
-          #   img: r.snippet.thumbnails?.high?.url or ""
-          #   source: "youtube"
-          #   url: "http://youtube.com/watch?v=#{r.id.videoId}"
-          # }
-          # nextItems = @parent.state.items.concat [obj]
-          # @parent.setState items: nextItems
+          nextItems = @parent.state.items.concat r
+          @applyComparator nextItems
+          @parent.setState items: nextItems
+
+  applyComparator: (items) ->
+    text = @parent.state.text.toLowerCase()
+
+    rankRules =
+      "exactMatch": 
+        weight: 1000
+        func: (item) => 
+          val = if item is text then 1 else 0
+          return val
+
+      "textInTitle":
+        weight: 10
+        func: (item) => 
+          # console.log item, text, item.indexOf(text), text.length - text.indexOf(item)
+          val = if item.indexOf(text) is -1 then 0 else (item.length - item.indexOf(text))
+          return val
+
+    # console.log items
+    for item, i in items
+      item.score = 0
+
+      for k, v of rankRules
+        # console.log item
+        console.log k + ": #{v.func(item.title.toLowerCase()) * v.weight}"
+        item.score += (v.func(item.title.toLowerCase()) * v.weight)
+        
+    #   # console.log item.score, i
+
+
+    items = _.sortBy items, (item) =>
+      return item.score
+
+    # # console.log "bundle over:", items, "\n\n\n\n\n\n\n\n\n\n\n\n\n"
+
+    return items
+
+
 
 
 
@@ -70,7 +102,7 @@ $ ->
       div {}, [
         (div {className: 'header'}, [
           (h1 {className:"header-title"}, 'streamsear.ch'),
-          (h3 {className:"header-subtitle"}, 'Search simultaneously across multiple platforms for the track you want to listen to right now on.'),
+          (h3 {className:"header-subtitle"}, 'Search simultaneously across multiple streaming platforms for the track you want to listen to right now.'),
           (form {onSubmit: @handleSubmit, className: 'header-form'}, [
             input onKeyUp: @onKey,
             button {}, 'Search'])
