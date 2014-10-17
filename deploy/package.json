@@ -2,10 +2,13 @@
   "name": "your-app",
   "description": "Description",
   "author": "Your Name",
-  "version": "0.0.1-14",
+  "version": "0.0.1-20",
   "repository": {
     "type": "git",
     "url": ""
+  },
+  "scripts": {
+    "start": "server.js"
   },
   "dependencies": {
     "express": "*",

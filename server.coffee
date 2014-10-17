@@ -1,6 +1,7 @@
 
 express = require 'express'
 unirest = require('unirest')
+path = require('path')
 app = express()
 
 
@@ -55,8 +56,8 @@ platforms =
       if request.length 
         for item in request
           obj = {
-            img: if item.artwork_url? then item.artwork_url.replace('large', 't500x500').split('?')[0] else item.user.avatar_url.replace('large', 't500x500').split('?')[0]
-            title: item.user.username + item.title
+            img: if item.artwork_url? then item.artwork_url.replace('large', 't500x500').split('?')[0] else item.user?.avatar_url.replace('large', 't500x500').split('?')[0]
+            title: item.user.username + " - " + item.title
             url: item.permalink_url
             source: "soundcloud"
           }
@@ -78,7 +79,7 @@ sendPlatformRequest = (q, platform, callback) ->
 # ROUTES
 
 
-app.get '/', (req, res) -> res.sendfile './public/index.html'
+app.get '/', (req, res) -> res.sendFile path.join(__dirname, '/public', 'index.html')
 
 app.get '/platforms/:platform', (req, res) -> 
   sendPlatformRequest req.query.q, req.param("platform"), (r) =>
