@@ -86,5 +86,5 @@ app.get '/platforms/:platform', (req, res) ->
     res.json r
 
 
-app.listen 3001
+app.listen process.env.PORT || 3001
 

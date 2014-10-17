@@ -11,7 +11,8 @@
     "express": "*",
     "nodemon": "*",
     "unirest": "*",
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "brunch": "1.x"
   },
   "devDependencies": {
     "javascript-brunch": ">= 1.0 < 1.8",
@@ -22,6 +23,10 @@
     "clean-css-brunch": ">= 1.0 < 1.8",
     "auto-reload-brunch": ">= 1.0 < 1.8",
     "eco-brunch": ">= 1.0 < 1.8"
+  },
+  "scripts": {
+    "postinstall": "brunch build --optimize"
+    
   },
   "subdomain": "adrianleb-streamsearch",
   "engines": {
