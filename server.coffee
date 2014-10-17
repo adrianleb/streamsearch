@@ -19,6 +19,7 @@ platforms =
         obj = {
           img: item.snippet.thumbnails?.high?.url or ""
           title: item.snippet.title
+          id: item.id.videoId
           url: "http://youtube.com/watch?v=#{item.id.videoId}"
           source: "youtube"
         }
@@ -39,6 +40,7 @@ platforms =
         title += item.name
         obj = {
           title: title
+          id: item.id  
           img: item.album.images[0].url
           url: item.external_urls.spotify
           source: "spotify"
@@ -52,11 +54,23 @@ platforms =
     url: (q) -> return "http://api.soundcloud.com/tracks.json?client_id=c280d0c248513cfc78d7ee05b52bf15e&q=#{q}&limit=10"
     headers: {}
     parser: (request) ->
+
+      imageSrc = (item) ->
+        avatar = "http://placekitten.com/700/700"
+        if item.artwork_url? 
+              avatar = item.artwork_url.replace('large', 't500x500').split('?')[0] 
+        else 
+          unless item.user?.avatar_url.indexOf('default_avatar') > -1
+            avatar = item.user?.avatar_url.replace('large', 't500x500').split('?')[0]
+       
+        return avatar
+
       res = []
       if request.length 
         for item in request
           obj = {
-            img: if item.artwork_url? then item.artwork_url.replace('large', 't500x500').split('?')[0] else item.user?.avatar_url.replace('large', 't500x500').split('?')[0]
+            img: imageSrc(item)
+            id: item.id
             title: item.user.username + " - " + item.title
             url: item.permalink_url
             source: "soundcloud"
