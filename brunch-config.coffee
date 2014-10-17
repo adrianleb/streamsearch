@@ -1,10 +1,10 @@
 exports.config =
 
-  # server:
-  #   path: 'server.coffee'
-  #   port: 3333
-  #   base: '/'
-  #   run: yes
+  server:
+    path: 'server.coffee'
+    port: 3001
+    # base: '/'
+    # run: yes
 
 
   # See http://brunch.io/#documentation for docs.
