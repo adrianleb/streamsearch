@@ -8,45 +8,68 @@ app = express()
 
 app.use(express.static __dirname+'/public')
 
-platforms = 
+platforms =
+  itunes:
+    url:(q) -> return "https://itunes.apple.com/search?term=#{q.split(' ').join('+')}&entity=song" 
+    headers: {}
+
+    parser: (request) ->
+      request = JSON.parse(request)
+      console.log request
+      # console.log request, request.error?.errors?
+      res = []
+      if request.results?.length 
+        for item in request.results 
+          obj = {
+            img: item.artworkUrl100
+            title: item.artistName + " - " + item.trackName
+            id: item.trackId
+            url: item.radioStationUrl
+            source: "itunes"
+          }
+          res.push obj
+      return res
   youtube:
     url: (q) -> return "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{q}&key=AIzaSyAblW50IPEIhbEqcAkgXwYeRR_3rYDDIms"
     headers: {}
     parser: (request) ->
       # console.log request, request.error?.errors?
       res = []
-      if request.items? for item in request.items 
-        obj = {
-          img: item.snippet.thumbnails?.high?.url or ""
-          title: item.snippet.title
-          id: item.id.videoId
-          url: "http://youtube.com/watch?v=#{item.id.videoId}"
-          source: "youtube"
-        }
-        console.log obj
-        res.push obj
+      if request.items?.length
+        for item in request.items 
+          console.log 'hey'
+          obj = {
+            img: item.snippet.thumbnails?.high?.url or ""
+            title: item.snippet.title
+            id: item.id.videoId
+            url: "http://youtube.com/watch?v=#{item.id.videoId}"
+            source: "youtube"
+          }
+          res.push obj
       return res
+
 
 
   spotify:
     url: (q) -> return "https://api.spotify.com/v1/search?q=#{q}&type=track"
     headers: {}
     parser: (request) ->
-      console.log request
+      # console.log request
       res = []
-        
-      for item in request.tracks?.items
-        title = if item.artists?[0]? then "#{item.artists[0].name} - " else ""
-        title += item.name
-        obj = {
-          title: title
-          id: item.id  
-          img: item.album.images[0].url
-          url: item.external_urls.spotify
-          source: "spotify"
-        }
-        res.push obj
-        console.log item
+      console.log 'spotify', request.tracks?.items?.length
+      if request.tracks?.items?.length
+        for item in request.tracks.items
+          if item?
+            title = if item.artists?[0]? then "#{item.artists[0].name} - " else ""
+            title += item.name
+            obj = {
+              title: title
+              id: item.id  
+              img: item.album.images[0].url
+              url: item.external_urls.spotify
+              source: "spotify"
+            }
+            res.push obj
       return res
 
 
@@ -66,12 +89,19 @@ platforms =
         return avatar
 
       res = []
-      if request.length 
+      console.log 'soundcloud', request?.length
+
+      if request?.length 
         for item in request
+
+          title = item.title
+          unless (title.indexOf(" - ") > 0 )
+            title = item.user.username + " - " + item.title
+
           obj = {
             img: imageSrc(item)
             id: item.id
-            title: item.user.username + " - " + item.title
+            title: title
             url: item.permalink_url
             source: "soundcloud"
           }

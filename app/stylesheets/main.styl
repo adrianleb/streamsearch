@@ -39,7 +39,7 @@ a
 
 
 .header 
-  text-align left
+  text-align center
   // border-bottom 1px solid rgba(black, 0.1)
   overflow hidden
   height auto
@@ -52,11 +52,10 @@ a
   top 0
   transition all 0.2s ease-in-out
   // background: linear-gradient(top, white, transparent);
-  padding-top 15rem
-  padding-bottom 3rem
   margin 0 auto
   max-width 100rem
-  padding-left 3rem
+  padding 15rem 1rem 3rem 1rem
+  
 
 
 
@@ -105,6 +104,7 @@ a
   background-color transparent
   // margin 1rem
   margin 2rem 1rem
+  text-align center
 
   input
     -webkit-appearance none
@@ -140,7 +140,10 @@ a
     // background-color rgba(saturation(red, 77), 0.9)
     color black
     font-weight 500
-    margin-left 1rem
+    margin-top 1rem
+    // margin 0 auto
+    
+    // margin-left 1rem
     // margin 1rem auto
     -webkit-font-rendering optimize-legibility
 
@@ -180,15 +183,16 @@ a
 .search-filters
   padding 0
   margin 0
-  margin-left 1rem
 
   &:before
-    content : "search on: "
+    content : "On: "
     text-transform uppercase
-    font-size 1.2rem
+    font-size 1rem
     font-weight 500
     opacity 0.9
-    margin-right 2rem
+    // margin-right 2rem
+    display block
+    margin-bottom 1rem
 
 .filter
   margin-right 1rem
@@ -229,17 +233,31 @@ a
 
   padding 1rem
 
+
+.search-results
+  padding 0 1rem
+  
+
 .search-result
+
+
   list-style none
-  display block
   vertical-align top
   position relative
   width 100%
   max-width 70rem
   padding 0
   text-decoration none
-  margin 0 auto
-  border-radius 0.1rem
+  display: flex; /* or inline-flex */
+  flex-flow: row wrap;
+  margin 1rem auto
+  flex-wrap: wrap;
+
+  align-content: space-around;
+    
+  -webkit-box-align: stretch;
+  -webkit-align-items: stretch;
+
 
   &:before
     content ""
@@ -252,7 +270,7 @@ a
     z-index 2
     background-color rgba(white, 0.35)
 
-    box-shadow 0 0.1rem 0.4rem rgba(black, 0.25)
+    box-shadow 0 0.1rem 0.1rem rgba(black, 0.25)
 
       
 
@@ -265,23 +283,27 @@ a
 
 
   h3
-    font-size 2rem
-    font-weight 300
-    color rgba(black, 0.95)
+    font-size 1.8rem
+    font-weight 400
+    color rgba(black, 0.8)
     vertical-align bottom
+    text-align center
     position: relative;
-    text-align left
+    // text-align left
     // top: 50%;
     transform: translateY(-0%);
     display inline-block
     width 100%
-    z-index 3
+    z-index 6
     position relative
-    line-height 1.4
+    line-height 1.3
     margin 0
     padding-bottom 2.2rem
     margin-top 0.5rem
-
+    
+    a
+      text-decoration none
+      color inherit
 
 
   .source
@@ -294,12 +316,38 @@ a
     text-transform uppercase
     z-index 10
     display block
+    text-align center
     position absolute
     bottom 1rem
     // padding 1rem
+    transition all 0.2s ease-out
     left 1rem
     right 1rem
-    text-align right
+    transform translateX(-2.5rem)
+    
+    &:before
+      content: "open on "
+      opacity 0
+      
+      transition all 0.2s ease-out
+
+      display inline-block
+      transform translateX(2rem)
+      
+    
+.search-result
+  &:hover
+    background-color red
+    .source
+      transform translateX(0)
+        &:before
+          opacity 1
+          transform translateX(-0.2rem)
+      
+      
+      
+
+    // text-align right
     // left 2rem
 
 
@@ -342,24 +390,48 @@ footer
 
 
 
+@media (min-width: 420px)
+
+  .header
+    text-align left
+    padding 15rem 1rem 3rem 3rem
+    
+    
+
+  .search-filters
+    margin-left 2rem
+    
+    &:before
+      margin-bottom 0
+      display inline-block
+      margin-right 2rem
+      
+  .header-form
+    text-align left
+  .header-form button
+    margin-top 0
+  
+    margin-left 1rem
+    
+  .search-results
+    // align-items: stretch;
+    margin 0.5rem auto
+    // padding 0 3rem
+
+    max-width 96rem
+    
+
+  .search-result
+    width calc(50% - 2rem)
+    // box-shadow inset 0 0 0 1px rgba(black, 0.15)
+
+    display inline-block
+    margin 1rem
+
 @media (min-width: 820px)
 
-  .search-results
-    display: flex; /* or inline-flex */
-    flex-flow: row wrap;
-    margin 0 auto
-    flex-wrap: wrap;
-    // margin-left 10%
-
-    // align-content: stretch;
-    align-content: space-around;
-      
-    -webkit-box-align: stretch;
-    -webkit-align-items: stretch;
-    // align-items: stretch;
-    margin-top 0.5rem
-
-    max-width 102rem
+  .small ~ .content
+    min-height 40rem
     
 
   .search-result

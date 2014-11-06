@@ -10,12 +10,14 @@ class Fetcher
     @platforms = ['soundcloud', 'youtube', 'spotify']
 
   fetch: (q) ->
-    for platform in @platforms
+    for platform, i in @platforms
       $.ajax
         url: "/platforms/#{platform}?q=#{q}"
         success: (r) =>     
-          r.id = Math.round(Math.random * 10000)
+          # platform + original id
+          r.id = parseFloat(""+i+r.id)
           nextItems = @parent.state.items.concat r
+          console.log nextItems.length
           nextItems = @applyComparator(nextItems)
 
           @parent.setState items: nextItems
@@ -110,15 +112,28 @@ $ ->
 
   SearchResults = React.createClass
 
-    renderItem: (item) ->
+
+    onCardClick: (e) ->
+
+      console.log e.target, e.target
+
+
+      url = e.target.getAttribute('data-href')
+      console.log url
+      if url?    
+        window.open(url, '_blank');
+
+    renderItem: (item, i) ->
+      # console.log i
       if @props.filtersObj[item.source]
-        (a {key:item.id, className: "search-result", href:item.url, "data-visible":@props.filtersObj[item.source] ,target:"_blank"},[
+        (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source]},[
           (div {className:'result-image', style: backgroundImage:"url(#{item.img})"}),
           (span {className:'source'}, [item.source]),
           (div {className:"result-container"}, [
             (img {src:item.img}),
-            (h3 {}, [item.title])
-
+            (h3 {}, [
+              (a {href:item.url, target:"_blank"},[item.title])
+            ])
           ])
         ])
 
@@ -135,6 +150,8 @@ $ ->
         'spotify':true
         'youtube':true
         'soundcloud':true
+        # 'itunes':true
+
       text: ''
       searchCharCount: 0
       isSearching: false
