@@ -128,7 +128,7 @@ $ ->
       if @props.filtersObj[item.source]
         (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source]},[
           (div {className:'result-image', style: backgroundImage:"url(#{item.img})"}),
-          (span {className:'source'}, [item.source]),
+          (span {className:'source'}, [(a {href:item.url, target:"_blank"},[item.source])]),
           (div {className:"result-container"}, [
             (img {src:item.img}),
             (h3 {}, [
