@@ -7,21 +7,23 @@ search across multiple platforms for the track you want to listen to.
 
 - make sure you have node installed
 
-- made sure you have brunch installed
+- made sure you have [brunch](http://brunch.io/) installed
 
-- npm install
+- ```npm install```
 
 ## Run
 
 Run the server with nodemon
-'''bash
+
+```bash
 nodemon server.coffee --watch server.coffee
-'''
+```
 
 Compile files with brunch
-'''bash
+
+```bash
 brunch watch
-'''
+```
 
 
 ##TODO
