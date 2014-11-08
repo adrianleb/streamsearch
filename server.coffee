@@ -30,7 +30,7 @@ platforms =
           res.push obj
       return res
   youtube:
-    url: (q) -> return "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{q}&key=AIzaSyAblW50IPEIhbEqcAkgXwYeRR_3rYDDIms"
+    url: (q) -> return "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{q}&key=#{process.env['YT_KEY']}"
     headers: {}
     parser: (request) ->
       # console.log request, request.error?.errors?
@@ -74,7 +74,7 @@ platforms =
 
 
   soundcloud:
-    url: (q) -> return "http://api.soundcloud.com/tracks.json?client_id=c280d0c248513cfc78d7ee05b52bf15e&q=#{q}&limit=10"
+    url: (q) -> return "http://api.soundcloud.com/tracks.json?client_id=#{process.env['SC_KEY']}&q=#{q}&limit=10"
     headers: {}
     parser: (request) ->
 

@@ -11,12 +11,15 @@ search across multiple platforms for the track you want to listen to.
 
 - ```npm install```
 
+- create env file "touch .env" for the platform keys
+
+
 ## Run
 
-Run the server with nodemon
+Run the server with nodemon and foreman for the env variables 
 
 ```bash
-nodemon server.coffee --watch server.coffee
+foreman run nodemon server.coffee --watch server.coffee
 ```
 
 Compile files with brunch
