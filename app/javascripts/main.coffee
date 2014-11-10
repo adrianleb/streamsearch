@@ -14,10 +14,8 @@ class Fetcher
       $.ajax
         url: "/platforms/#{platform}?q=#{q}"
         success: (r) =>     
-          # platform + original id
           r.id = parseFloat(""+i+r.id)
           nextItems = @parent.state.items.concat r
-          console.log nextItems.length
           nextItems = @applyComparator(nextItems)
 
           @parent.setState items: nextItems
@@ -39,14 +37,12 @@ class Fetcher
       "exactMatch": 
         weight: 10000
         func: (item) => 
-          # console.log item, text, item == text
           val = if item == text then 1 else 0
           return val
 
       "textInTitle":
         weight: 10
         func: (item) => 
-          # console.log item, text, item.indexOf(text), text.length - text.indexOf(item)
           val = if item.indexOf(text) is -1 then 0 else (item.length - item.indexOf(text))
           return val
       "textInAfterDash":
@@ -70,30 +66,23 @@ class Fetcher
         func: (item) =>
           val = 0
           for split in text.split(' ')
-            # console.log item, split, item.indexOf(split)
             val += item.indexOf(split)
-          # console.log val, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
           return val
 
 
-    # console.log items
     for item, i in items
       item.score = 0
 
       for k, v of rankRules
-        # console.log item
-        # console.log k + ": #{v.func(item.title.toLowerCase()) * v.weight}"
         item.score += (v.func(item.title.toLowerCase()) * v.weight)
         
-      # console.log item.score, i
 
 
     items = _.sortBy items, (item) =>
       return -item.score
 
-    console.log items
-    # # console.log "bundle over:", items, "\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    # console.log items
 
     return items
 
@@ -105,6 +94,9 @@ class Fetcher
 $ ->
   {ul, li, div, h3, h1, a, span, form, label, img, input, button} = React.DOM
 
+  Route = ReactRouter.Route
+  Routes = ReactRouter.Routes
+  Link = ReactRouter.Link
 
 
 
@@ -114,23 +106,14 @@ $ ->
 
 
     onCardClick: (e) ->
-
-      console.log e.target, e.target
-
-
-      url = e.target.getAttribute('data-href')
-      console.log url
-      if url?    
-        window.open(url, '_blank');
+      console.log e.target.getAttribute('data-href')
 
     renderItem: (item, i) ->
-      # console.log i
       if @props.filtersObj[item.source]
         image = item.img
         if item.nsfw
-          console.log 'no no'
           image = "/nsfw.png"
-        (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source]},[
+        (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source], onClick:@onCardClick},[
           (div {className:'result-image', style: backgroundImage:"url(#{item.img})"}),
           (span {className:'source'}, [(a {href:item.url, target:"_blank"},[item.source])]),
           (div {className:"result-container"}, [
@@ -147,6 +130,8 @@ $ ->
 
   MusicSearch = React.createClass
 
+    mixins: [ ReactRouter.Navigation ]
+
     getInitialState: ->
       results: []
       items: []
@@ -155,25 +140,11 @@ $ ->
         'youtube':true
         'soundcloud':true
         'vimeo':true
-        # 'itunes':true
 
-      text: ''
+      text: ""
       searchCharCount: 0
       isSearching: false
 
-    onKey: (e) ->
-      @setState searchCharCount: e.target.value.length
-      @setState text: e.target.value
-
-
-    handleSubmit: (e) ->
-      nop e
-      @setState items: []
-      @setState isSearching: true
-      @fetcher.fetch(this.state.text)
-
-    componentWillMount: (e) ->
-      @fetcher = new Fetcher(parent:@)
 
     onChange: (e) ->
       name = e.target.parentNode.firstChild.textContent
@@ -187,11 +158,53 @@ $ ->
 
 
 
-    render: ->
+    onKey: (e) ->
+      @setState text: e.target.value
 
+
+
+    handleSubmit: (e) ->
+      nop e
+      text = e.currentTarget.childNodes[0].value
+      @sendSearchSignal text, true
+
+
+    sendSearchSignal: (q, navigate)->
+      unless q.length is 0
+        @setState 
+          items: []
+          isSearching: true
+          text: q
+          searchCharCount: q.length
+
+        @fetcher.fetch(q) 
+        if navigate
+          ga('send', 'event', 'search', 'submitted', q)
+          @transitionTo("/", null, {q:q})
+        else
+          ga('send', 'event', 'search', 'landed', q)
+
+
+
+
+    componentWillMount: (e) ->
+      @fetcher = new Fetcher(parent:@)
+
+    componentDidMount: ->
+      if @props.query.q
+        @sendSearchSignal @props.query.q, false
+
+
+      $(window).on 'popstate pushstate', (e) =>
+        unless @props.query.q is @state.text
+          @sendSearchSignal @props.query.q, false
+          
+
+
+
+    render: ->
       inputs = []
       renderAll = false
-
 
       for k, v of @state.filtersObj
         inputs.push (label {key:k ,className:"filter #{if v then 'checked' else ''}"},[
@@ -210,7 +223,7 @@ $ ->
           (h1 {className:"header-title"}, 'Stream Sweep'),
           (h3 {className:"header-subtitle"}, 'Search simultaneously across multiple streaming platforms for the track you want to listen to right now.'),
           (form {onSubmit: @handleSubmit, className: 'header-form'}, [
-            input onKeyUp: @onKey,
+            input {value:@state.text, placeholder: "track title", onChange:@onKey},
             button {}, 'Search']),
           (ul {className:"search-filters"}, inputs)
         ]),
@@ -220,4 +233,12 @@ $ ->
 
       
 
-  React.renderComponent (MusicSearch {}), $('#main')[0]   
+      
+  # routes 
+  window.routes = 
+    Routes({location:'history'}, 
+      (Route {name: "app", path: "/*", handler:MusicSearch}),
+    )
+  
+
+  React.renderComponent (window.routes), $('#main')[0]   

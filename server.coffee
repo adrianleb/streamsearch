@@ -36,13 +36,6 @@ platforms =
       res = []
       if request.items?.length
         for item in request.items 
-          console.log item
-          console.log ""
-          console.log ""
-          console.log ""
-          console.log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-
-
           obj = {
             img: item.snippet.thumbnails?.high?.url or ""
             title: item.snippet.title
@@ -118,11 +111,9 @@ platforms =
     }
     parser: (request) ->
       request = JSON.parse(request)
-      # console.log request
       res = []
       if request?.data?.length 
         for item in request.data
-
             obj = {
               img: item.pictures[0].link
               id: item.uri
@@ -149,6 +140,8 @@ sendPlatformRequest = (q, platform, callback) ->
 
 
 app.get '/', (req, res) -> res.sendFile path.join(__dirname, '/public', 'index.html')
+
+app.get '/search/:query', (req, res) -> res.sendFile path.join(__dirname, '/public', 'index.html')
 
 app.get '/platforms/:platform', (req, res) -> 
   sendPlatformRequest req.query.q, req.param("platform"), (r) =>
