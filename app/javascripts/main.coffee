@@ -7,7 +7,7 @@ class Fetcher
 
   constructor: (arg) ->
     @parent = arg.parent
-    @platforms = ['soundcloud', 'youtube', 'spotify']
+    @platforms = ['soundcloud', 'youtube', 'spotify', 'vimeo']
 
   fetch: (q) ->
     for platform, i in @platforms
@@ -126,11 +126,15 @@ $ ->
     renderItem: (item, i) ->
       # console.log i
       if @props.filtersObj[item.source]
+        image = item.img
+        if item.nsfw
+          console.log 'no no'
+          image = "/nsfw.png"
         (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source]},[
           (div {className:'result-image', style: backgroundImage:"url(#{item.img})"}),
           (span {className:'source'}, [(a {href:item.url, target:"_blank"},[item.source])]),
           (div {className:"result-container"}, [
-            (img {src:item.img}),
+            (img {src:image}),
             (h3 {}, [
               (a {href:item.url, target:"_blank"},[item.title])
             ])
@@ -150,6 +154,7 @@ $ ->
         'spotify':true
         'youtube':true
         'soundcloud':true
+        'vimeo':true
         # 'itunes':true
 
       text: ''

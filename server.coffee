@@ -9,14 +9,13 @@ app = express()
 app.use(express.static __dirname+'/public')
 
 platforms =
+
   itunes:
     url:(q) -> return "https://itunes.apple.com/search?term=#{q.split(' ').join('+')}&entity=song" 
     headers: {}
 
     parser: (request) ->
       request = JSON.parse(request)
-      console.log request
-      # console.log request, request.error?.errors?
       res = []
       if request.results?.length 
         for item in request.results 
@@ -29,15 +28,21 @@ platforms =
           }
           res.push obj
       return res
+
   youtube:
     url: (q) -> return "https://www.googleapis.com/youtube/v3/search?part=snippet&q=#{q}&key=#{process.env['YT_KEY']}"
     headers: {}
     parser: (request) ->
-      # console.log request, request.error?.errors?
       res = []
       if request.items?.length
         for item in request.items 
-          console.log 'hey'
+          console.log item
+          console.log ""
+          console.log ""
+          console.log ""
+          console.log "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+
           obj = {
             img: item.snippet.thumbnails?.high?.url or ""
             title: item.snippet.title
@@ -54,9 +59,7 @@ platforms =
     url: (q) -> return "https://api.spotify.com/v1/search?q=#{q}&type=track"
     headers: {}
     parser: (request) ->
-      # console.log request
       res = []
-      console.log 'spotify', request.tracks?.items?.length
       if request.tracks?.items?.length
         for item in request.tracks.items
           if item?
@@ -84,12 +87,10 @@ platforms =
               avatar = item.artwork_url.replace('large', 't500x500').split('?')[0] 
         else 
           unless item.user?.avatar_url.indexOf('default_avatar') > -1
-            avatar = item.user?.avatar_url.replace('large', 't500x500').split('?')[0]
-       
+            avatar = item.user?.avatar_url.replace('large', 't500x500').split('?')[0] 
         return avatar
 
       res = []
-      console.log 'soundcloud', request?.length
 
       if request?.length 
         for item in request
@@ -108,6 +109,30 @@ platforms =
           res.push obj
       return res
 
+
+  vimeo:
+    url: (q) -> return "https://api.vimeo.com/videos?query=#{q}&per_page=10"
+    headers: {
+      'Authorization' : "#{process.env["VIMEO_AUTH"]}"
+      'Accept': 'application/vnd.vimeo.*+json;version=3.0'
+    }
+    parser: (request) ->
+      request = JSON.parse(request)
+      # console.log request
+      res = []
+      if request?.data?.length 
+        for item in request.data
+
+            obj = {
+              img: item.pictures[0].link
+              id: item.uri
+              nsfw: 'nudity' in item.content_rating 
+              title: item.name
+              url: item.link
+              source: "vimeo"
+            }
+            res.push obj
+      return res
 
 
 
