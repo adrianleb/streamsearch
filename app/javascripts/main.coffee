@@ -108,18 +108,25 @@ $ ->
     onCardClick: (e) ->
       console.log e.target.getAttribute('data-href')
 
+    onAnchorClick: (e) ->
+      console.log 'clicked anchor aye?'
+      el = $(e.currentTarget).parents('.search-result')
+      ga('send', 'event', 'opened', el.attr('data-source'), el.attr('data-title'))
+
+
+
     renderItem: (item, i) ->
       if @props.filtersObj[item.source]
         image = item.img
         if item.nsfw
           image = "/nsfw.png"
-        (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source], onClick:@onCardClick},[
+        (div {key:item.id, className: "search-result", "data-visible":@props.filtersObj[item.source], "data-source":item.source, "data-title":item.title, onClick:@onCardClick},[
           (div {className:'result-image', style: backgroundImage:"url(#{item.img})"}),
-          (span {className:'source'}, [(a {href:item.url, target:"_blank"},[item.source])]),
+          (span {className:'source'}, [(a {href:item.url, target:"_blank", onClick:@onAnchorClick},[item.source])]),
           (div {className:"result-container"}, [
             (img {src:image}),
             (h3 {}, [
-              (a {href:item.url, target:"_blank"},[item.title])
+              (a {href:item.url, target:"_blank", onClick:@onAnchorClick},[item.title])
             ])
           ])
         ])
