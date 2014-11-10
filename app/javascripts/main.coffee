@@ -115,6 +115,7 @@ $ ->
 
 
 
+
     renderItem: (item, i) ->
       if @props.filtersObj[item.source]
         image = item.img
