@@ -10,6 +10,7 @@
   "dependencies": {
     "express": "*",
     "nodemon": "*",
+    "newrelic":"*",
     "unirest": "*",
     "coffee-script": "*",
     "brunch": "1.x"
