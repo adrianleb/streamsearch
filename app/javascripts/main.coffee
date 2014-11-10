@@ -12,7 +12,7 @@ class Fetcher
   fetch: (q) ->
     for platform, i in @platforms
       $.ajax
-        url: "/platforms/#{platform}?q=#{q}"
+        url: "/platforms/#{platform}?q=#{encodeURIComponent(q)}"
         success: (r) =>     
           r.id = parseFloat(""+i+r.id)
           nextItems = @parent.state.items.concat r

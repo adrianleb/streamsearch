@@ -11,6 +11,7 @@
     "express": "*",
     "nodemon": "*",
     "newrelic":"*",
+    "utf8": "*",
     "unirest": "*",
     "coffee-script": "*",
     "brunch": "1.x"

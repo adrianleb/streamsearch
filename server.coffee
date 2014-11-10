@@ -2,6 +2,7 @@
 express = require 'express'
 unirest = require('unirest')
 path = require('path')
+utf8 = require('utf8')
 app = express()
 
 
@@ -73,7 +74,7 @@ platforms =
     url: (q) -> return "http://api.soundcloud.com/tracks.json?client_id=#{process.env['SC_KEY']}&q=#{q}&limit=10"
     headers: {}
     parser: (request) ->
-
+      console.log request
       imageSrc = (item) ->
         avatar = "http://placekitten.com/700/700"
         if item.artwork_url? 
@@ -128,6 +129,9 @@ platforms =
 
 
 sendPlatformRequest = (q, platform, callback) ->
+  # console.log q
+  q = utf8.decode(q)
+  console.log q
   unless platform in Object.keys(platforms)
     callback {r:'sorry, no can do'}
     return false
