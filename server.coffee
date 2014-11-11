@@ -1,3 +1,4 @@
+require('newrelic')
 
 express = require 'express'
 unirest = require('unirest')
