@@ -10,6 +10,10 @@ class Fetcher
     @platforms = ['soundcloud', 'youtube', 'spotify', 'vimeo']
 
   fetch: (q) ->
+    @totalPendingRequests = @platforms.length
+    @parent.setState status:'loading'
+
+
     for platform, i in @platforms
       $.ajax
         url: "/platforms/#{platform}?q=#{encodeURIComponent(q)}"
@@ -19,6 +23,17 @@ class Fetcher
           nextItems = @applyComparator(nextItems)
 
           @parent.setState items: nextItems
+
+          @totalPendingRequests -= 1
+
+          if @totalPendingRequests is 0
+            @parent.setState status:'finished'
+        error: (e, r) =>
+          @totalPendingRequests -= 1
+          @parent.setState status: 'error'
+
+            
+
 
 
   applyComparator: (items) ->
@@ -92,7 +107,7 @@ class Fetcher
 
 
 $ ->
-  {ul, li, div, h3, h1, a, span, form, label, img, input, button} = React.DOM
+  {ul, li, div, h3, h1, a, p, span, form, label, img, input, button} = React.DOM
 
   Route = ReactRouter.Route
   Routes = ReactRouter.Routes
@@ -151,6 +166,7 @@ $ ->
 
       text: ""
       searchCharCount: 0
+      status: "idle"
       isSearching: false
 
 
@@ -213,6 +229,13 @@ $ ->
     render: ->
       inputs = []
       renderAll = false
+      statusMsg = ""
+      if @state.status is 'error'
+        statusMsg = "There was an error with your query, try again."
+      else if @state.status is "loading"
+        statusMsg = "Waiting for #{@fetcher.totalPendingRequests} sources..."
+      else if @state.status is "finished"
+        statusMsg = "Done!"
 
       for k, v of @state.filtersObj
         inputs.push (label {key:k ,className:"filter #{if v then 'checked' else ''}"},[
@@ -227,13 +250,15 @@ $ ->
             input {onChange: @onChange, type:"checkbox", checked:false }])
 
       div {}, [
-        (div {className: "header #{if @state.isSearching then "small" else ""}"}, [
+        (div {className: "header #{if @state.isSearching then "small" else "" }"}, [
           (h1 {className:"header-title"}, 'Stream Sweep'),
           (h3 {className:"header-subtitle"}, 'Search simultaneously across multiple streaming platforms for the track you want to listen to right now.'),
           (form {onSubmit: @handleSubmit, className: 'header-form'}, [
             input {value:@state.text, placeholder: "track title", onChange:@onKey},
             button {}, 'Search']),
-          (ul {className:"search-filters"}, inputs)
+          (ul {className:"search-filters"}, inputs),
+          (p {className:"status #{@state.status}"}, [statusMsg])
+
         ]),
         (div {className: "content"},
           SearchResults items: @state.items, searchCharCount: @state.searchCharCount, filtersObj:@state.filtersObj

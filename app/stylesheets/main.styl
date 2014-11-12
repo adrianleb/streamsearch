@@ -74,7 +74,7 @@ a
   color white
   vertical-align top
   font-weight 600
-  padding 0 1rem 
+  // padding 0 1rem 
   margin 0 auto
   color #111
   line-height 1
@@ -93,7 +93,7 @@ a
   font-weight 300
   // margin 0 auto
   color rgba(black, 0.6)
-  padding 1rem 1rem
+  padding 1rem 0
 
 .header-form
   transition all 0.2s ease-in-out
@@ -107,7 +107,7 @@ a
   vertical-align top
   background-color transparent
   // margin 1rem
-  margin 2rem 1rem
+  margin 2rem 0
   text-align center
 
   input
@@ -154,6 +154,22 @@ a
     -webkit-font-rendering optimize-legibility
 
 
+
+.header .status
+  opacity 0.6
+  text-align center
+  display block
+  height 2rem
+  padding 0 2rem
+  margin 0
+  margin-top 2rem
+  transition all 0.5s ease-in-out 0s
+  
+  &.finished
+    opacity 0
+    transition all 0.5s ease-in-out 1.5s
+    
+  
 .bg-images
   position absolute
   top 10%
@@ -248,6 +264,8 @@ a
 
 .search-results
   padding 0 1rem
+  max-width 100rem
+  
   
 
 .search-result
@@ -393,7 +411,7 @@ footer
   .footer-wrap
     max-width 100rem
     margin 0 auto
-    padding-left 4rem
+    // padding-left 4rem
     
   p
     color rgba(0, 0, 0, 0.6)
@@ -414,17 +432,23 @@ footer
 
   .header
     text-align left
-    padding 15rem 1rem 3rem 3rem
+    padding 15rem 1rem 3rem 1rem
     
+    
+    
+  .header .status
+    text-align left
+    padding-left 0
     
 
   .search-filters
-    margin-left 2rem
+    margin-top -1rem
+    margin-left 1rem
     
     &:before
       margin-bottom 0
       display inline-block
-      margin-right 2rem
+      margin-right 1rem
       
   .header-form
     text-align left
@@ -436,9 +460,8 @@ footer
   .search-results
     // align-items: stretch;
     margin 0.5rem auto
+    padding 0
     // padding 0 3rem
-
-    max-width 96rem
     
 
   .search-result
@@ -450,6 +473,7 @@ footer
 
 @media (min-width: 820px)
 
+    
   .small ~ .content
     min-height 40rem
     

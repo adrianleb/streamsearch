@@ -75,7 +75,7 @@ platforms =
     url: (q) -> return "http://api.soundcloud.com/tracks.json?client_id=#{process.env['SC_KEY']}&q=#{q}&limit=10"
     headers: {}
     parser: (request) ->
-      console.log request
+      # console.log request
       imageSrc = (item) ->
         avatar = "http://placekitten.com/700/700"
         if item.artwork_url? 
@@ -130,9 +130,18 @@ platforms =
 
 
 sendPlatformRequest = (q, platform, callback) ->
-  # console.log q
-  q = utf8.decode(q)
   console.log q
+
+
+  try
+    q = utf8.decode(q)
+
+  catch e
+    callback 404
+    return false
+
+
+
   unless platform in Object.keys(platforms)
     callback {r:'sorry, no can do'}
     return false
@@ -150,7 +159,10 @@ app.get '/search/:query', (req, res) -> res.sendFile path.join(__dirname, '/publ
 
 app.get '/platforms/:platform', (req, res) -> 
   sendPlatformRequest req.query.q, req.param("platform"), (r) =>
-    res.json r
+    if r is 404
+      res.status(404).send('Not Found.')
+    else
+      res.json r
 
 
 app.listen process.env.PORT || 3001
